@@ -40,8 +40,8 @@ export default defineConfig({
         start_url: '/',
         display: 'standalone',
         orientation: 'portrait',
-        background_color: '#ffffff',
-        theme_color: '#1d4ed8',
+        background_color: '#f5f8f9',
+        theme_color: '#0f6f6c',
         icons: [
           { src: 'favicon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
         ],

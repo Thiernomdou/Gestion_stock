@@ -90,6 +90,96 @@ export type Database = {
         Update: never
         Relationships: []
       }
+      categories: {
+        Row: {
+          id: string
+          organization_id: string
+          parent_id: string | null
+          name: string
+          sort_order: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          organization_id: string
+          parent_id?: string | null
+          name: string
+          sort_order?: number
+        }
+        Update: {
+          parent_id?: string | null
+          name?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          id: string
+          organization_id: string
+          category_id: string | null
+          sku: string | null
+          barcode: string | null
+          name: string
+          description: string | null
+          brand: string | null
+          unit: string
+          allow_decimal_qty: boolean
+          sale_price: number
+          wholesale_price: number | null
+          min_stock: number
+          photo_url: string | null
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          organization_id: string
+          category_id?: string | null
+          sku?: string | null
+          barcode?: string | null
+          name: string
+          description?: string | null
+          brand?: string | null
+          unit?: string
+          allow_decimal_qty?: boolean
+          sale_price?: number
+          wholesale_price?: number | null
+          min_stock?: number
+          photo_url?: string | null
+          is_active?: boolean
+        }
+        Update: {
+          category_id?: string | null
+          sku?: string | null
+          barcode?: string | null
+          name?: string
+          description?: string | null
+          brand?: string | null
+          unit?: string
+          allow_decimal_qty?: boolean
+          sale_price?: number
+          wholesale_price?: number | null
+          min_stock?: number
+          photo_url?: string | null
+          is_active?: boolean
+        }
+        Relationships: []
+      }
+      product_costs: {
+        Row: {
+          product_id: string
+          organization_id: string
+          avg_cost: number
+          last_cost: number | null
+          updated_at: string
+        }
+        Insert: never
+        Update: never
+        Relationships: []
+      }
       stores: {
         Row: {
           id: string
@@ -115,8 +205,21 @@ export type Database = {
         Relationships: []
       }
     }
-    Views: { [_ in never]: never }
+    Views: {
+      product_stock: {
+        Row: { organization_id: string; store_id: string; product_id: string; quantity: number }
+        Relationships: []
+      }
+    }
     Functions: {
+      set_opening_stock: {
+        Args: { p_org: string; p_store: string; p_product: string; p_qty: number; p_unit_cost: number | null }
+        Returns: undefined
+      }
+      import_products: {
+        Args: { p_org: string; p_store: string; p_rows: Json }
+        Returns: Json
+      }
       create_organization: {
         Args: { p_name: string; p_slug: string; p_store_name?: string }
         Returns: string

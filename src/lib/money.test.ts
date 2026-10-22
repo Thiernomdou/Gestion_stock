@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { formatMoney, parseMoney, toMoney } from './money'
 
-const S = ' '
+const S = '\u00a0'
 
 describe('formatMoney', () => {
   it('sépare les milliers par des espaces, sans décimales', () => {

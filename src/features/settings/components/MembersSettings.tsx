@@ -12,7 +12,9 @@ import { useAuth } from '@/features/auth/store'
 import { useCurrentOrg } from '@/features/organization/context'
 import type { MemberRole } from '@/lib/database.types'
 import { errorMessage } from '@/lib/errors'
+import { initials } from '@/lib/format'
 import { fr } from '@/lib/i18n/fr'
+import { cn } from '@/lib/utils'
 import { useCancelInvitation, useInvitations, useInvite, useMembers, useUpdateMember } from '../api'
 import { invitationSchema, memberRoles, type Invitation, type InvitationInput } from '../schema'
 
@@ -43,19 +45,24 @@ export function MembersSettings() {
   return (
     <div className="grid gap-6">
       <section className="grid gap-2">
-        <h2 className="text-lg font-semibold">{t.members}</h2>
+        <h2 className="text-lg font-bold tracking-tight">{t.members}</h2>
         {members.error && <p className="text-destructive">{errorMessage(members.error)}</p>}
         <ul className="grid gap-2">
           {members.data?.map((m) => {
             const name = m.display_name ?? m.user_id.slice(0, 8)
             const isMe = m.user_id === userId
             return (
-              <li key={m.user_id} className="grid gap-2 rounded-lg border p-3 sm:flex sm:items-center">
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-base font-medium">
-                    {name} {isMe && <span className="text-muted-foreground">({t.you})</span>}
-                  </p>
-                  {!m.is_active && <Badge variant="secondary">{t.inactive}</Badge>}
+              <li key={m.user_id} className="grid gap-3 rounded-3xl p-3 surface sm:flex sm:items-center">
+                <div className="flex min-w-0 flex-1 items-center gap-3">
+                  <span aria-hidden className={cn('grid size-11 shrink-0 place-items-center rounded-2xl text-sm font-extrabold', m.is_active ? 'bg-linear-to-b from-ink-2 to-ink text-white' : 'bg-muted text-muted-foreground')}>
+                    {initials(name)}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="truncate text-base font-bold">
+                      {name} {isMe && <span className="font-medium text-muted-foreground">({t.you})</span>}
+                    </p>
+                    {m.is_active ? <p className="text-sm text-muted-foreground">{fr.roles[m.role]}</p> : <Badge variant="secondary">{t.inactive}</Badge>}
+                  </div>
                 </div>
                 <div className="flex gap-2">
                   <RoleSelect value={m.role} disabled={!m.is_active}
@@ -82,11 +89,11 @@ export function MembersSettings() {
 
       {invitations.data && invitations.data.length > 0 && (
         <section className="grid gap-2">
-          <h2 className="text-lg font-semibold">{t.pendingInvitations}</h2>
+          <h2 className="text-lg font-bold tracking-tight">{t.pendingInvitations}</h2>
           <ul className="grid gap-2">
             {invitations.data.map((inv) => (
-              <li key={inv.id} className="flex items-center gap-2 rounded-lg border border-dashed p-3">
-                <Mail className="size-5 shrink-0 text-muted-foreground" aria-hidden />
+              <li key={inv.id} className="flex items-center gap-3 rounded-3xl border-2 border-dashed p-3">
+                <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-muted text-muted-foreground"><Mail className="size-5" aria-hidden /></span>
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-base font-medium">{inv.display_name ?? inv.email}</p>
                   <p className="truncate text-sm text-muted-foreground">{inv.email} · {fr.roles[inv.role]}</p>
@@ -122,15 +129,18 @@ function InviteForm() {
   )
 
   return (
-    <section className="grid gap-3 rounded-lg bg-muted/60 p-3">
-      <h2 className="flex items-center gap-2 text-lg font-semibold"><UserPlus className="size-5" aria-hidden /> {t.invite}</h2>
+    <section className="grid gap-4 rounded-3xl p-4 surface sm:p-6">
+      <h2 className="flex items-center gap-3 text-lg font-bold tracking-tight">
+        <span className="grid size-10 place-items-center rounded-xl bg-accent text-accent-foreground"><UserPlus className="size-5" aria-hidden /></span>
+        {t.invite}
+      </h2>
       <p className="text-sm text-muted-foreground">{t.inviteHint}</p>
       <form onSubmit={onSubmit} className="grid gap-3" noValidate>
         <FormField id="invite-email" label={fr.auth.email} error={errors.email?.message}>
-          <Input id="invite-email" type="email" inputMode="email" className="bg-background" {...register('email')} />
+          <Input id="invite-email" type="email" inputMode="email" {...register('email')} />
         </FormField>
         <FormField id="invite-name" label={t.displayName} error={errors.display_name?.message}>
-          <Input id="invite-name" className="bg-background" {...register('display_name')} />
+          <Input id="invite-name" {...register('display_name')} />
         </FormField>
         <FormField id="invite-role" label={t.role}>
           <Controller control={control} name="role"

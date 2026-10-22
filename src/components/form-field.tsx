@@ -12,7 +12,7 @@ interface FormFieldProps {
 /** Libellé + champ + message d'erreur, empilés (lisible à 360 px). */
 export function FormField({ id, label, error, hint, children }: FormFieldProps) {
   return (
-    <div className="grid gap-1.5">
+    <div className="grid content-start gap-1.5">
       <Label htmlFor={id} className="text-base">{label}</Label>
       {children}
       {error ? (

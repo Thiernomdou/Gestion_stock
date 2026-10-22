@@ -27,7 +27,7 @@ export function OrganizationSettings() {
 
   const t = fr.settings
   return (
-    <form onSubmit={onSubmit} className="grid gap-4" noValidate>
+    <form onSubmit={onSubmit} className="grid gap-4 rounded-3xl p-4 surface sm:p-6" noValidate>
       <FormField id="org-name" label={t.orgName} error={errors.name?.message}>
         <Input id="org-name" {...register('name')} />
       </FormField>

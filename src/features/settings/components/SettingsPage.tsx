@@ -1,4 +1,6 @@
+import { Building2, type LucideIcon, Store, Users } from 'lucide-react'
 import { Navigate, useSearchParams } from 'react-router-dom'
+import { PageHeader } from '@/components/page-header'
 import { useCurrentOrg } from '@/features/organization/context'
 import { fr } from '@/lib/i18n/fr'
 import { can, type Permission } from '@/lib/permissions'
@@ -8,10 +10,10 @@ import { OrganizationSettings } from './OrganizationSettings'
 import { StoresSettings } from './StoresSettings'
 
 const TABS = [
-  { key: 'organisation', label: fr.settings.tabs.organization, permission: 'manage_organization', Component: OrganizationSettings },
-  { key: 'boutiques', label: fr.settings.tabs.stores, permission: 'manage_stores', Component: StoresSettings },
-  { key: 'utilisateurs', label: fr.settings.tabs.members, permission: 'manage_users', Component: MembersSettings },
-] as const satisfies ReadonlyArray<{ key: string; label: string; permission: Permission; Component: () => React.JSX.Element }>
+  { key: 'organisation', label: fr.settings.tabs.organization, icon: Building2, permission: 'manage_organization', Component: OrganizationSettings },
+  { key: 'boutiques', label: fr.settings.tabs.stores, icon: Store, permission: 'manage_stores', Component: StoresSettings },
+  { key: 'utilisateurs', label: fr.settings.tabs.members, icon: Users, permission: 'manage_users', Component: MembersSettings },
+] as const satisfies ReadonlyArray<{ key: string; label: string; icon: LucideIcon; permission: Permission; Component: () => React.JSX.Element }>
 
 export function SettingsPage() {
   const { role } = useCurrentOrg()
@@ -22,10 +24,10 @@ export function SettingsPage() {
   if (!active) return <Navigate to="/" replace />
 
   return (
-    <div className="grid gap-4">
-      <h1 className="text-2xl font-bold">{fr.settings.title}</h1>
+    <div className="mx-auto grid w-full max-w-3xl grid-cols-1 gap-5">
+      <PageHeader title={fr.settings.title} description={fr.settings.description} />
       {tabs.length > 1 && (
-        <div role="tablist" className="grid auto-cols-fr grid-flow-col gap-1 rounded-lg bg-muted p-1">
+        <div role="tablist" className="grid auto-cols-fr grid-flow-col gap-1 rounded-2xl p-1 surface">
           {tabs.map((tab) => (
             <button
               key={tab.key}
@@ -33,16 +35,19 @@ export function SettingsPage() {
               aria-selected={tab.key === active.key}
               onClick={() => setParams({ onglet: tab.key }, { replace: true })}
               className={cn(
-                'h-11 rounded-md px-2 text-sm font-semibold sm:text-base',
-                tab.key === active.key ? 'bg-background shadow-sm' : 'text-muted-foreground',
+                'flex h-12 items-center justify-center gap-2 rounded-xl px-2 text-sm font-semibold transition-colors sm:text-base',
+                tab.key === active.key ? 'bg-primary text-primary-foreground shadow-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground',
               )}
             >
+              <tab.icon className="hidden size-5 min-[400px]:block" aria-hidden />
               {tab.label}
             </button>
           ))}
         </div>
       )}
-      <active.Component />
+      <div key={active.key} className="animate-rise">
+        <active.Component />
+      </div>
     </div>
   )
 }
