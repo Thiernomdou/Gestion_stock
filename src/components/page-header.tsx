@@ -14,7 +14,7 @@ interface PageHeaderProps {
 export function PageHeader({ title, description, back, actions }: PageHeaderProps) {
   return (
     <header className="flex flex-wrap items-end gap-x-4 gap-y-3 pb-1">
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 flex-1 basis-60">
         {back && (
           <Link
             to={back}

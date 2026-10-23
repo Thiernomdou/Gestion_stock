@@ -45,3 +45,8 @@ export function slugify(text: string): string {
     .replace(/^-+|-+$/g, '')
     .slice(0, 40)
 }
+
+/** Heure seule : « 14:05 ». */
+export function formatTime(value: string | Date, timezone = DEFAULT_TIMEZONE): string {
+  return format(new TZDate(new Date(value), timezone), 'HH:mm', { locale: frLocale })
+}

@@ -23,6 +23,14 @@ export const router = createBrowserRouter([
             children: [
               { index: true, element: <HomePage /> },
               {
+                path: 'caisse',
+                children: [
+                  { index: true, lazy: async () => ({ Component: (await import('@/features/pos/components/PosPage')).PosPage }) },
+                  { path: 'journee', lazy: async () => ({ Component: (await import('@/features/pos/components/CashDayPage')).CashDayPage }) },
+                  { path: 'journees/:id', lazy: async () => ({ Component: (await import('@/features/pos/components/CashDayPage')).SessionReportPage }) },
+                ],
+              },
+              {
                 path: 'produits',
                 children: [
                   { index: true, lazy: async () => ({ Component: (await import('@/features/products/components/ProductsPage')).ProductsPage }) },

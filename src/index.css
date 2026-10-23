@@ -190,3 +190,25 @@
   scrollbar-width: none;
   &::-webkit-scrollbar { display: none; }
 }
+
+/* Impression : seul le contenu de <PrintArea> sort sur l'imprimante (ticket thermique 58/80 mm) */
+.print-area {
+  display: none;
+}
+@media print {
+  /* Application, fenêtres ouvertes, notifications : rien d'autre que le ticket */
+  body > *:not(.print-area) {
+    display: none !important;
+  }
+  html, body {
+    background: #fff !important;
+  }
+  .print-area {
+    display: block;
+    padding: 3mm 2.5mm;
+    color: #000;
+    font-size: 11px;
+    line-height: 1.35;
+    font-variant-numeric: tabular-nums;
+  }
+}

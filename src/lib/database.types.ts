@@ -204,6 +204,78 @@ export type Database = {
         }
         Relationships: []
       }
+      customers: {
+        Row: {
+          id: string
+          organization_id: string
+          name: string
+          phone: string | null
+          customer_type: string
+          credit_limit: number | null
+          notes: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          organization_id: string
+          name: string
+          phone?: string | null
+          customer_type?: string
+          credit_limit?: number | null
+          notes?: string | null
+        }
+        Update: {
+          name?: string
+          phone?: string | null
+          customer_type?: string
+          credit_limit?: number | null
+          notes?: string | null
+        }
+        Relationships: []
+      }
+      cash_sessions: {
+        Row: {
+          id: string
+          organization_id: string
+          store_id: string
+          status: 'open' | 'closed'
+          opened_by: string | null
+          opened_at: string
+          opening_float: number
+          closed_by: string | null
+          closed_at: string | null
+          expected_cash: number | null
+          counted_cash: number | null
+          difference: number | null
+          notes: string | null
+        }
+        Insert: never
+        Update: never
+        Relationships: []
+      }
+      sales: {
+        Row: {
+          id: string
+          organization_id: string
+          store_id: string
+          cash_session_id: string | null
+          customer_id: string | null
+          number: string
+          status: Database['public']['Enums']['sale_status']
+          subtotal: number
+          discount_total: number
+          total: number
+          paid_amount: number
+          balance_due: number
+          note: string | null
+          created_by: string | null
+          created_at: string
+        }
+        Insert: never
+        Update: never
+        Relationships: []
+      }
     }
     Views: {
       product_stock: {
@@ -227,6 +299,22 @@ export type Database = {
       accept_invitations: {
         Args: Record<PropertyKey, never>
         Returns: number
+      }
+      open_cash_session: {
+        Args: { p_org: string; p_store: string; p_opening_float?: number }
+        Returns: string
+      }
+      close_cash_session: {
+        Args: { p_session: string; p_counted_cash: number; p_notes?: string | null }
+        Returns: Database['public']['Tables']['cash_sessions']['Row']
+      }
+      cash_session_summary: {
+        Args: { p_session: string }
+        Returns: Json
+      }
+      create_sale: {
+        Args: { p: Json }
+        Returns: string
       }
     }
     Enums: {

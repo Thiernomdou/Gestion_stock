@@ -28,10 +28,10 @@ interface Tile {
 // Ordre = feuille de route (CLAUDE.md §9). Renseigner `to` à la livraison de chaque module.
 const m = fr.modules
 const TILES: Tile[] = [
+  { label: m.pos, icon: ShoppingCart, permission: ['sell'], to: '/caisse' },
+  { label: m.cash, icon: Wallet, permission: ['sell'], to: '/caisse/journee' },
   { label: m.products, icon: Tags, permission: ['view_stock'], to: '/produits' },
   { label: m.settings, icon: Settings, permission: ['manage_stores', 'manage_users'], to: '/parametres' },
-  { label: m.pos, icon: ShoppingCart, permission: ['sell'] },
-  { label: m.cash, icon: Wallet, permission: ['sell'] },
   { label: m.dashboard, icon: LayoutDashboard, permission: ['view_reports'] },
   { label: m.sales, icon: Receipt, permission: ['sell'] },
   { label: m.stock, icon: Boxes, permission: ['view_stock'] },
@@ -213,14 +213,23 @@ export function HomePage() {
         </h1>
         {store && <p className="relative mt-2 text-base text-white/75">{store.name} · {fr.roles[role]}</p>}
 
-        {can(role, 'manage_products') && (
+        {(can(role, 'sell') || can(role, 'manage_products')) && (
           <div className="relative mt-6 flex flex-wrap gap-2">
-            <Link to="/produits/nouveau" className="inline-flex h-12 items-center gap-2 rounded-2xl bg-white px-4 text-base font-bold text-ink shadow-raised transition-transform active:scale-[0.98]">
-              <PackagePlus className="size-5 text-primary" aria-hidden /> {fr.products.new}
-            </Link>
-            <Link to="/produits/import" className="inline-flex h-12 items-center gap-2 rounded-2xl bg-white/10 px-4 text-base font-semibold ring-1 ring-white/20 transition-colors hover:bg-white/15 active:scale-[0.98]">
-              <Upload className="size-5" aria-hidden /> {fr.products.import}
-            </Link>
+            {can(role, 'sell') && (
+              <Link to="/caisse" className="inline-flex h-12 items-center gap-2 rounded-2xl bg-white px-4 text-base font-bold text-ink shadow-raised transition-transform active:scale-[0.98]">
+                <ShoppingCart className="size-5 text-primary" aria-hidden /> {fr.pos.title}
+              </Link>
+            )}
+            {can(role, 'manage_products') && (
+              <Link to="/produits/nouveau" className="inline-flex h-12 items-center gap-2 rounded-2xl bg-white/10 px-4 text-base font-semibold ring-1 ring-white/20 transition-colors hover:bg-white/15 active:scale-[0.98]">
+                <PackagePlus className="size-5" aria-hidden /> {fr.products.new}
+              </Link>
+            )}
+            {can(role, 'manage_products') && (
+              <Link to="/produits/import" className="hidden h-12 items-center gap-2 rounded-2xl bg-white/10 px-4 text-base font-semibold ring-1 ring-white/20 transition-colors hover:bg-white/15 active:scale-[0.98] sm:inline-flex">
+                <Upload className="size-5" aria-hidden /> {fr.products.import}
+              </Link>
+            )}
           </div>
         )}
       </section>

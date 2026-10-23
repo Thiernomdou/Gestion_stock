@@ -141,9 +141,33 @@ await ok('dépense espèces + renvoi idempotent', async () => {
 await ko('vendeur : insertion directe de dépense interdite', () => as(U.cashier,
   `insert into expenses(organization_id,store_id,category,amount,expense_date) values ($1,$2,'Divers',1,current_date)`, [org, store]));
 
+// Journée de caisse : droits et résumé (0004)
+await ko('magasinier : vente interdite', () => as(U.stock, `select create_sale($1::jsonb)`, [sale()]), /Accès refusé/);
+await ko('magasinier : ouverture de caisse interdite', () => as(U.stock, `select open_cash_session($1,$2,0)`, [org, store]), /Accès refusé/);
+await ko('magasinier : dépense interdite', () => as(U.stock, `select record_expense($1::jsonb)`,
+  [JSON.stringify({ id: uuid(), organization_id: org, store_id: store, category: 'Divers', amount: 1 })]), /Accès refusé/);
+await ko('magasinier : clôture interdite', () => as(U.stock, `select close_cash_session($1, 0)`, [sess]), /Accès refusé/);
+await ok('ouverture déjà faite : même session renvoyée', async () => {
+  eq((await one(U.cashier, `select open_cash_session($1,$2,999) as id`, [org, store])).id, sess, 'session');
+});
+const live = await ok('résumé de caisse (vendeur)', () => one(U.cashier, `select cash_session_summary($1) r`, [sess]));
+await ko('résumé : autre organisation', () => as(U.ownerB, `select cash_session_summary($1)`, [sess]), /Accès refusé/);
+await ko('anon : résumé interdit', () => as(null, `select cash_session_summary($1)`, [sess]), /permission denied/);
+await ko('connecté : calcul interne inaccessible', () => as(U.cashier, `select session_expected_cash($1)`, [sess]), /permission denied/);
+
 // Clôture
 const z = await ok('clôture de caisse', () => one(U.cashier, `select expected_cash, difference from close_cash_session($1, 100000)`, [sess]));
 if (z) console.log('   attendu =', z.expected_cash, '· écart =', z.difference);
+await ok('résumé : attendu identique à la clôture, ventes et espèces cohérentes', async () => {
+  const r = live.r;
+  eq(r.expected_cash, z.expected_cash, 'attendu');
+  eq(r.session.opening_float, 50000, 'fond de caisse');
+  const cash = r.payments.find((p) => p.method === 'cash');
+  eq(Number(r.session.opening_float) + Number(cash?.net ?? 0) - Number(r.expenses_cash), r.expected_cash, 'formule');
+  if (!(Number(r.sales_count) > 0)) throw new Error('aucune vente comptée');
+  eq((await one(U.owner, `select count(*) c from audit_log where action='cash.open'`)).c, 1, 'audit ouverture');
+});
+await ko('clôture deux fois', () => as(U.cashier, `select close_cash_session($1, 0)`, [sess]), /déjà clôturée/);
 await ko('modifier une dépense d\'une caisse clôturée', () => as(U.owner, `update expenses set amount = 1 where organization_id=$1`, [org]), /clôturée/);
 
 // Vente hors ligne synchronisée après la clôture
