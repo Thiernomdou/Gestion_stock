@@ -11,6 +11,9 @@ const AUTH_MESSAGES: Array<[RegExp, string]> = [
   [/failed to fetch|network|load failed/i, fr.errors.network],
   [/row-level security|permission denied/i, fr.errors.forbidden],
   [/duplicate key value.*organization_invitations/i, fr.errors.invitationExists],
+  [/duplicate key value.*products_org_sku_uq/i, fr.errors.duplicateSku],
+  [/duplicate key value.*products_org_barcode_uq/i, fr.errors.duplicateBarcode],
+  [/duplicate key value.*categories_org_root_name_uq/i, fr.errors.duplicateCategory],
 ]
 
 export function errorMessage(error: unknown): string {

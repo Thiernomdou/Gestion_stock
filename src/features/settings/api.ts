@@ -45,9 +45,10 @@ export function useUpdateStore(orgId: string) {
   })
 }
 
-export function useMembers(orgId: string) {
+export function useMembers(orgId: string, enabled = true) {
   return useQuery({
     queryKey: settingsKeys.members(orgId),
+    enabled,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('organization_members').select('*').eq('organization_id', orgId).order('created_at')

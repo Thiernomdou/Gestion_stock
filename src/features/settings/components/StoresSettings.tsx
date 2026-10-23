@@ -15,6 +15,7 @@ import type { Store } from '@/features/organization/api'
 import { useCurrentOrg } from '@/features/organization/context'
 import { errorMessage } from '@/lib/errors'
 import { fr } from '@/lib/i18n/fr'
+import { cn } from '@/lib/utils'
 import { useCreateStore, useUpdateStore } from '../api'
 import { storeSchema, type StoreInput } from '../schema'
 
@@ -32,11 +33,13 @@ export function StoresSettings() {
     <div className="grid gap-3">
       <ul className="grid gap-2">
         {stores.map((store) => (
-          <li key={store.id} className="flex flex-wrap items-center gap-2 rounded-lg border p-3">
-            <StoreIcon className="size-5 text-muted-foreground" aria-hidden />
-            <span className="min-w-0 flex-1 truncate text-base font-medium">{store.name}</span>
+          <li key={store.id} className="flex flex-wrap items-center gap-3 rounded-3xl p-2.5 pl-3 surface">
+            <span className={cn('grid size-11 place-items-center rounded-2xl', store.is_active ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground')}>
+              <StoreIcon className="size-5" aria-hidden />
+            </span>
+            <span className="min-w-0 flex-1 truncate text-base font-bold">{store.name}</span>
             {!store.is_active && <Badge variant="secondary">{t.inactive}</Badge>}
-            <Button variant="outline" size="icon" aria-label={`${t.rename} ${store.name}`} onClick={() => setEditing(store)}>
+            <Button variant="ghost" size="icon" aria-label={`${t.rename} ${store.name}`} onClick={() => setEditing(store)}>
               <Pencil />
             </Button>
             {store.is_active ? (
@@ -54,7 +57,7 @@ export function StoresSettings() {
         ))}
       </ul>
 
-      <Button size="lg" variant="secondary" onClick={() => setEditing('new')}>
+      <Button size="lg" variant="outline" className="border-dashed border-primary/40 text-primary hover:bg-accent hover:text-primary" onClick={() => setEditing('new')}>
         <Plus /> {t.newStore}
       </Button>
 

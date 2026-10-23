@@ -11,7 +11,7 @@
     "typecheck": "tsc -b",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:sql": "node supabase/tests/0001_init.test.mjs"
+    "test:sql": "node supabase/tests/rpc.test.mjs"
   },
   "dependencies": {
     "@date-fns/tz": "^1.5.0",

@@ -22,6 +22,24 @@ export const router = createBrowserRouter([
             element: <AppLayout />,
             children: [
               { index: true, element: <HomePage /> },
+              {
+                path: 'caisse',
+                children: [
+                  { index: true, lazy: async () => ({ Component: (await import('@/features/pos/components/PosPage')).PosPage }) },
+                  { path: 'journee', lazy: async () => ({ Component: (await import('@/features/pos/components/CashDayPage')).CashDayPage }) },
+                  { path: 'journees/:id', lazy: async () => ({ Component: (await import('@/features/pos/components/CashDayPage')).SessionReportPage }) },
+                ],
+              },
+              {
+                path: 'produits',
+                children: [
+                  { index: true, lazy: async () => ({ Component: (await import('@/features/products/components/ProductsPage')).ProductsPage }) },
+                  { path: 'nouveau', lazy: async () => ({ Component: (await import('@/features/products/components/ProductFormPage')).ProductFormPage }) },
+                  { path: 'categories', lazy: async () => ({ Component: (await import('@/features/products/components/CategoriesPage')).CategoriesPage }) },
+                  { path: 'import', lazy: async () => ({ Component: (await import('@/features/products/components/ImportPage')).ImportPage }) },
+                  { path: ':id', lazy: async () => ({ Component: (await import('@/features/products/components/ProductFormPage')).ProductFormPage }) },
+                ],
+              },
               // Pages peu utilisées : chargées à la demande pour alléger le démarrage sur mobile.
               {
                 path: 'parametres',

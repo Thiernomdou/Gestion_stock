@@ -36,7 +36,7 @@ Une application web installable (PWA), utilisable sur ordinateur et sur téléph
 | Impression | ticket 58/80 mm via CSS d'impression + react-to-print ; PDF A4 pour factures et rapports |
 | Graphiques | Recharts |
 | Dates | date-fns (fuseau de l'organisation, `Africa/Conakry` par défaut) |
-| Tests | Vitest + Testing Library ; tests SQL des fonctions RPC sur PGlite (`supabase/tests/`) |
+| Tests | Vitest + Testing Library ; tests SQL des fonctions RPC sur PGlite (`supabase/tests/rpc.test.mjs`, toutes les migrations dans l’ordre) |
 | Hébergement | Vercel ou Netlify (front) + Supabase (back) |
 
 ## 4. Architecture multi-tenant
